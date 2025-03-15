@@ -1,0 +1,115 @@
+:root {
+  /* Base Colors */
+  --white: #ffffff;
+  --black: #000000;
+  
+  /* Color Set 1 - Ocean Blue */
+  --theme-1-bg: #E3F2FD;
+  --theme-1-highlight: #2196F3;
+  --theme-1-text: #1565C0;
+  --theme-1-btn-primary-bg: #2196F3;
+  --theme-1-btn-primary-text: #ffffff;
+  --theme-1-btn-secondary-bg: rgba(33, 150, 243, 0.1);
+  --theme-1-btn-secondary-text: #2196F3;
+  --theme-1-stat-bg: rgba(33, 150, 243, 0.1);
+  --theme-1-stat-text: #1565C0;
+
+  /* Color Set 2 - Forest Green */
+  --theme-2-bg: #E8F5E9;
+  --theme-2-highlight: #4CAF50;
+  --theme-2-text: #2E7D32;
+  --theme-2-btn-primary-bg: #4CAF50;
+  --theme-2-btn-primary-text: #ffffff;
+  --theme-2-btn-secondary-bg: rgba(76, 175, 80, 0.1);
+  --theme-2-btn-secondary-text: #4CAF50;
+  --theme-2-stat-bg: rgba(76, 175, 80, 0.1);
+  --theme-2-stat-text: #2E7D32;
+
+  /* Color Set 3 - Sunset Orange */
+  --theme-3-bg: #FBE9E7;
+  --theme-3-highlight: #FF5722;
+  --theme-3-text: #D84315;
+  --theme-3-btn-primary-bg: #FF5722;
+  --theme-3-btn-primary-text: #ffffff;
+  --theme-3-btn-secondary-bg: rgba(255, 87, 34, 0.1);
+  --theme-3-btn-secondary-text: #FF5722;
+  --theme-3-stat-bg: rgba(255, 87, 34, 0.1);
+  --theme-3-stat-text: #D84315;
+
+  /* Color Set 4 - Royal Purple */
+  --theme-4-bg: #EDE7F6;
+  --theme-4-highlight: #673AB7;
+  --theme-4-text: #4527A0;
+  --theme-4-btn-primary-bg: #673AB7;
+  --theme-4-btn-primary-text: #ffffff;
+  --theme-4-btn-secondary-bg: rgba(103, 58, 183, 0.1);
+  --theme-4-btn-secondary-text: #673AB7;
+  --theme-4-stat-bg: rgba(103, 58, 183, 0.1);
+  --theme-4-stat-text: #4527A0;
+
+  /* Color Set 5 - Ruby Red */
+  --theme-5-bg: #FFEBEE;
+  --theme-5-highlight: #F44336;
+  --theme-5-text: #C62828;
+  --theme-5-btn-primary-bg: #F44336;
+  --theme-5-btn-primary-text: #ffffff;
+  --theme-5-btn-secondary-bg: rgba(244, 67, 54, 0.1);
+  --theme-5-btn-secondary-text: #F44336;
+  --theme-5-stat-bg: rgba(244, 67, 54, 0.1);
+  --theme-5-stat-text: #C62828;
+
+  /* Color Set 6 - Teal */
+  --theme-6-bg: #E0F2F1;
+  --theme-6-highlight: #009688;
+  --theme-6-text: #00695C;
+  --theme-6-btn-primary-bg: #009688;
+  --theme-6-btn-primary-text: #ffffff;
+  --theme-6-btn-secondary-bg: rgba(0, 150, 136, 0.1);
+  --theme-6-btn-secondary-text: #009688;
+  --theme-6-stat-bg: rgba(0, 150, 136, 0.1);
+  --theme-6-stat-text: #00695C;
+
+  /* Color Set 7 - Amber */
+  --theme-7-bg: #FFF8E1;
+  --theme-7-highlight: #FFC107;
+  --theme-7-text: #FF8F00;
+  --theme-7-btn-primary-bg: #FFC107;
+  --theme-7-btn-primary-text: #000000;
+  --theme-7-btn-secondary-bg: rgba(255, 193, 7, 0.1);
+  --theme-7-btn-secondary-text: #FF8F00;
+  --theme-7-stat-bg: rgba(255, 193, 7, 0.1);
+  --theme-7-stat-text: #FF8F00;
+
+  /* Color Set 8 - Pink Rose */
+  --theme-8-bg: #FCE4EC;
+  --theme-8-highlight: #E91E63;
+  --theme-8-text: #C2185B;
+  --theme-8-btn-primary-bg: #E91E63;
+  --theme-8-btn-primary-text: #ffffff;
+  --theme-8-btn-secondary-bg: rgba(233, 30, 99, 0.1);
+  --theme-8-btn-secondary-text: #E91E63;
+  --theme-8-stat-bg: rgba(233, 30, 99, 0.1);
+  --theme-8-stat-text: #C2185B;
+
+  /* Color Set 9 - Deep Blue */
+  --theme-9-bg: #E8EAF6;
+  --theme-9-highlight: #3F51B5;
+  --theme-9-text: #283593;
+  --theme-9-btn-primary-bg: #3F51B5;
+  --theme-9-btn-primary-text: #ffffff;
+  --theme-9-btn-secondary-bg: rgba(63, 81, 181, 0.1);
+  --theme-9-btn-secondary-text: #3F51B5;
+  --theme-9-stat-bg: rgba(63, 81, 181, 0.1);
+  --theme-9-stat-text: #283593;
+
+  /* Color Set 10 - Lime */
+  --theme-10-bg: #F9FBE7;
+  --theme-10-highlight: #CDDC39;
+  --theme-10-text: #827717;
+  --theme-10-btn-primary-bg: #CDDC39;
+  --theme-10-btn-primary-text: #000000;
+  --theme-10-btn-secondary-bg: rgba(205, 220, 57, 0.1);
+  --theme-10-btn-secondary-text: #827717;
+  --theme-10-stat-bg: rgba(205, 220, 57, 0.1);
+  --theme-10-stat-text: #827717;
+}
