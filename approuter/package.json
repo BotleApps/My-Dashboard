@@ -1,0 +1,12 @@
+{
+	"name": "my-dashboard-approuter",
+	"version": "1.0.0",
+	"description": "Approuter for Dashboard",
+	"dependencies": {
+		"@sap/approuter": "^17.1.0"
+	},
+	"scripts": {
+		"start": "node node_modules/@sap/approuter/approuter.js",
+		"dev": "node node_modules/@sap/approuter/approuter.js -w local"
+	}
+}
