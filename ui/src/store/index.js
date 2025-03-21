@@ -1,7 +1,5 @@
 import { createStore } from 'vuex'
-
-// Storage key for localStorage
-const STORAGE_KEY = 'dashboard_app_data'
+import { loadDashboards, saveDashboards } from '@/utils/storage';
 
 export default createStore({
   state: {
@@ -9,7 +7,8 @@ export default createStore({
     currentDashboard: null,
     showCreateDashboardModal: false,
     showAddCardModal: false,
-    showSettingsModal: false
+    showSettingsModal: false,
+    showEditCardModal: false
   },
   getters: {
     getDashboardBySlug: (state) => (slug) => {
@@ -31,6 +30,9 @@ export default createStore({
     },
     SET_SHOW_SETTINGS_MODAL(state, value) {
       state.showSettingsModal = value
+    },
+    SET_SHOW_EDIT_CARD_MODAL(state, value) {
+      state.showEditCardModal = value
     },
     ADD_DASHBOARD(state, dashboard) {
       state.dashboards.push(dashboard)
@@ -59,44 +61,16 @@ export default createStore({
   },
   actions: {
     loadDashboards({ commit }) {
-      try {
-        const savedData = localStorage.getItem(STORAGE_KEY)
-        if (savedData) {
-          const dashboards = JSON.parse(savedData)
-          commit('SET_DASHBOARDS', dashboards)
-        } else {
-          commit('SET_DASHBOARDS', [])
-        }
-      } catch (error) {
-        console.error('Error loading dashboards:', error)
-        commit('SET_DASHBOARDS', [])
-      }
+      const dashboards = loadDashboards();
+      commit('SET_DASHBOARDS', dashboards);
     },
-    
     loadDashboard({ commit, getters }, slug) {
       const dashboard = getters.getDashboardBySlug(slug)
       commit('SET_CURRENT_DASHBOARD', dashboard)
     },
-    
     saveDashboards({ state }) {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.dashboards))
-        
-        // Show a success notification
-        const saveNotification = document.createElement('div')
-        saveNotification.className = 'save-notification'
-        saveNotification.textContent = 'Dashboard saved successfully!'
-        document.body.appendChild(saveNotification)
-        
-        setTimeout(() => {
-          saveNotification.remove()
-        }, 2000)
-      } catch (error) {
-        console.error('Error saving to localStorage:', error)
-        alert('Could not save dashboard data. Please try again.')
-      }
+      saveDashboards(state.dashboards);
     },
-    
     createDashboard({ commit, dispatch }, dashboardData) {
       return new Promise((resolve) => {
         const newDashboard = {
@@ -146,6 +120,16 @@ export default createStore({
         commit('SET_CURRENT_DASHBOARD', null)
       }
       dispatch('saveDashboards')
+    },
+    deleteCard({ state, dispatch }, cardId) {
+      const dashboardIndex = state.dashboards.findIndex(d => d.id === state.currentDashboard.id)
+      if (dashboardIndex !== -1) {
+        const cardIndex = state.dashboards[dashboardIndex].cards.findIndex(c => c.id === cardId)
+        if (cardIndex !== -1) {
+          state.dashboards[dashboardIndex].cards.splice(cardIndex, 1)
+          dispatch('saveDashboards')
+        }
+      }
     }
   }
 })

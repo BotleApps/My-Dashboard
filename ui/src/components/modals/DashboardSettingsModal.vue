@@ -56,7 +56,6 @@ export default {
   methods: {
     ...mapActions(['updateDashboard', 'deleteDashboard']),
     async handleSubmit() {
-      
       if (this.formData.name.length > 50 || this.formData.description.length > 200) {
         console.log('Validation failed')
         return
@@ -67,7 +66,8 @@ export default {
           slug: this.currentDashboard.slug,
           name: this.formData.name,
           description: this.formData.description,
-          theme: this.formData.theme
+          theme: this.formData.theme,
+          cards: this.currentDashboard.cards // Retain existing cards
         })
         this.$emit('close')
       } catch (error) {

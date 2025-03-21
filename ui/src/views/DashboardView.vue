@@ -1,8 +1,8 @@
 <template>
   <div :class="['dashboard-header', themeClass]">
     <div class="dashboard-info">
-      <h2>{{ dashboard ? dashboard.name : 'Loading...' }}</h2>
-      <p>{{ dashboard ? dashboard.description : '' }}</p>
+      <h2 class="text" >{{ dashboard ? dashboard.name : 'Loading...' }}</h2>
+      <p class="text">{{ dashboard ? dashboard.description : '' }}</p>
     </div>
     <div class="dashboard-settings">
       <button @click="openSettingsModal" class="btn icon">
@@ -33,18 +33,28 @@
       @dragend="onDragEnd"
       @dragover.prevent
       @drop.prevent="onDrop($event, card)"
+      @delete-card="handleDeleteCard"
+      @open-settings="handleOpenSettings"
     />
   </div>
+
+  <EditCardModal 
+    v-if="showEditCardModal" 
+    :card="currentCard" 
+    @close="SET_SHOW_EDIT_CARD_MODAL(false)" 
+  />
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
 import DashboardCard from '@/components/DashboardCard.vue'
+import EditCardModal from '@/components/modals/EditCardModal.vue'
 
 export default {
   name: 'DashboardView',
   components: {
-    DashboardCard
+    DashboardCard,
+    EditCardModal
   },
   props: {
     dashboardSlug: {
@@ -55,7 +65,9 @@ export default {
   data() {
     return {
       draggedCard: null,
-      draggedIndex: null
+      draggedIndex: null,
+      currentCard: null,
+      showEditCardModal: false
     }
   },
   computed: {
@@ -73,8 +85,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['loadDashboard', 'updateCardsOrder']),
-    ...mapMutations(['SET_SHOW_ADD_CARD_MODAL', 'SET_SHOW_SETTINGS_MODAL', 'SET_CURRENT_DASHBOARD']),
+    ...mapActions(['loadDashboard', 'updateCardsOrder', 'deleteCard', 'updateCard']),
+    ...mapMutations(['SET_SHOW_ADD_CARD_MODAL', 'SET_SHOW_SETTINGS_MODAL', 'SET_SHOW_EDIT_CARD_MODAL', 'SET_CURRENT_DASHBOARD']),
     
     openAddCardModal() {
       // Set the current dashboard before opening modal
@@ -125,6 +137,16 @@ export default {
           cards
         })
       }
+    },
+    
+    handleOpenSettings(card) {
+      this.SET_CURRENT_DASHBOARD(this.dashboard)
+      this.SET_SHOW_EDIT_CARD_MODAL(true)
+      this.currentCard = card
+    },
+
+    handleDeleteCard(cardId) {
+      this.deleteCard(cardId)
     }
   },
   created() {
@@ -167,6 +189,10 @@ export default {
   position: absolute;
   top: 1rem;
   right: 1rem;
+}
+
+.text {
+  color : inherit;
 }
 
 .btn.icon {

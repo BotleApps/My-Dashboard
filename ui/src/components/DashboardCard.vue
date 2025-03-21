@@ -11,6 +11,12 @@
       <div v-if="isDraggable" class="card-drag-handle" :class="{ 'hidden-handle': !isHovered }">
         <i class="fas fa-grip-horizontal"></i>
       </div>
+      <div v-if="isDeletable" class="card-delete-button" :class="{ 'hidden-handle': !isHovered }" @click="deleteCard(card.id)">
+        <i class="fas fa-trash-alt"></i>
+      </div>
+      <div v-if="isEditable" class="card-settings-button" :class="{ 'hidden-handle': !isHovered }" @click="openSettingsModal(card)">
+        <i class="fas fa-cog"></i>
+      </div>
     </div>
     
     <!-- For dashboard cards (dashboard selector) -->
@@ -36,6 +42,8 @@
       <div v-else-if="card.metricType === 'word-list'" class="word-list">
         <span v-for="(word, index) in card.value" :key="index">{{ word }}</span>
       </div>
+      <div v-else-if="card.metricType === 'text'" class="text-value">{{ card.value }}</div>
+      <div v-else-if="card.metricType === '10star-rating'" v-html="create10StarRating(card.value)" class="star-rating"></div>
     </div>
   </div>
 </template>
@@ -64,6 +72,12 @@ export default {
       return this.dashboard !== null
     },
     isDraggable() {
+      return !this.isDashboardCard
+    },
+    isDeletable() {
+      return !this.isDashboardCard
+    },
+    isEditable() {
       return !this.isDashboardCard
     },
     cardTitle() {
@@ -122,6 +136,32 @@ export default {
       }
       
       return `${stars}<span class="star-value">${displayRating}/5</span>`
+    },
+    create10StarRating(rating) {
+      let stars = ''
+      const fullStars = Math.floor(rating)
+      const hasHalfStar = rating % 1 >= 0.5
+      const displayRating = rating.toFixed(2)
+      
+      for (let i = 0; i < 10; i++) {
+        if (i < fullStars) {
+          stars += '<i class="fas fa-star"></i>'
+        } else if (i === fullStars && hasHalfStar) {
+          stars += '<i class="fas fa-star-half-alt"></i>'
+        } else {
+          stars += '<i class="far fa-star"></i>'
+        }
+      }
+      
+      return `${stars}<span class="star-value">${displayRating}/10</span>`
+    },
+    openSettingsModal(card) {
+      this.$emit('open-settings', card)
+    },
+    deleteCard(cardId) {
+      if (confirm('Are you sure you want to delete this card?')) {
+        this.$emit('delete-card', cardId)
+      }
     }
   },
   mounted() {
@@ -327,5 +367,63 @@ export default {
 .dashboard-open-btn:hover {
   background-color: var(--btn-primary-bg);
   color: var(--btn-primary-text);
+}
+
+.card-delete-button {
+  position: absolute;
+  top: 10px;
+  right: 50px;
+  color: #666;
+  cursor: pointer;
+  padding: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.card:hover .card-delete-button {
+  opacity: 1;
+}
+.card-delete-button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+}
+.card-delete-button:active {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.card-settings-button {
+  position: absolute;
+  top: 10px;
+  right: 90px;
+  color: #666;
+  cursor: pointer;
+  padding: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.card:hover .card-settings-button {
+  opacity: 1;
+}
+.card-settings-button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+}
+.card-settings-button:active {
+  background-color: rgba(0, 0, 0, 0.15);
 }
 </style>
