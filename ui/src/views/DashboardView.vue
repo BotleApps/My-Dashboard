@@ -17,7 +17,7 @@
     </button>
   </div>
 
-  <div class="cards-container" ref="cardsContainer">
+  <div class="cards-container" ref="cardsContainer" @dragover.prevent>
     <div v-if="!dashboard || !dashboard.cards || !dashboard.cards.length" class="empty-state">
       <i class="fas fa-chart-bar"></i>
       <p>No cards yet. Add a card to get started!</p>
@@ -28,27 +28,26 @@
       v-for="card in dashboard.cards" 
       :key="card.id" 
       :card="card"
-      draggable
-      @dragstart="onDragStart($event, card)"
+      @dragstart="onDragStart"
       @dragend="onDragEnd"
-      @dragover.prevent
-      @drop.prevent="onDrop($event, card)"
+      @drop="onDrop"
       @delete-card="handleDeleteCard"
       @open-settings="handleOpenSettings"
     />
   </div>
 
   <EditCardModal 
-    v-if="$store.state.showEditCardModal" 
+    v-if="isModalOpen('editCardModal')" 
     :card="currentCard" 
-    @close="SET_SHOW_EDIT_CARD_MODAL(false)" 
+    @close="closeModal('editCardModal')" 
   />
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
-import DashboardCard from '@/components/DashboardCard.vue'
+import { mapState, mapActions, mapMutations } from 'vuex'
+import DashboardCard from '@/components/dashboard/DashboardCard.vue'
 import EditCardModal from '@/components/modals/EditCardModal.vue'
+import { useModalService } from '@/services/modalService'; // Fix the import path
 
 export default {
   name: 'DashboardView',
@@ -62,6 +61,14 @@ export default {
       required: true
     }
   },
+  setup() {
+    const { openModal, closeModal, isModalOpen } = useModalService();
+    return {
+      openModal,
+      closeModal,
+      isModalOpen
+    };
+  },
   data() {
     return {
       draggedCard: null,
@@ -70,48 +77,50 @@ export default {
     }
   },
   computed: {
-    ...mapState(['dashboards', 'currentDashboard', 'showEditCardModal']),
-    ...mapGetters(['getDashboardBySlug']),
+    ...mapState({
+      dashboards: state => state.dashboards.dashboards,
+      currentDashboard: state => state.dashboards.currentDashboard
+    }),
     dashboard() {
-      return this.getDashboardBySlug(this.dashboardSlug)
+      return this.$store.getters['dashboards/getDashboardBySlug'](this.dashboardSlug);
     },
     dashboardIndex() {
-      return this.dashboards.findIndex(d => d.slug === this.dashboardSlug)
+      return this.dashboards.findIndex(d => d.slug === this.dashboardSlug);
     },
     themeClass() {
-      const theme = this.dashboard ? this.dashboard.theme : '1'
-      return `theme-${theme}`
+      const theme = this.dashboard ? this.dashboard.theme : '1';
+      return `theme-${theme}`;
     }
   },
   methods: {
-    ...mapActions(['loadDashboard', 'updateCardsOrder', 'deleteCard', 'updateCard']),
-    ...mapMutations(['SET_SHOW_ADD_CARD_MODAL', 'SET_SHOW_SETTINGS_MODAL', 'SET_SHOW_EDIT_CARD_MODAL', 'SET_CURRENT_DASHBOARD']),
+    ...mapActions({
+      loadDashboard: 'dashboards/loadDashboard',
+      updateCardsOrder: 'cards/updateCardsOrder',
+      deleteCard: 'cards/deleteCard'
+    }),
+    ...mapMutations({
+      SET_CURRENT_DASHBOARD: 'dashboards/SET_CURRENT_DASHBOARD'
+    }),
     
     openAddCardModal() {
       // Set the current dashboard before opening modal
       this.SET_CURRENT_DASHBOARD(this.dashboard)
-      this.SET_SHOW_ADD_CARD_MODAL(true)
+      this.openModal('addCardModal')
     },
     
     openSettingsModal() {
       // Set the current dashboard before opening modal
       this.SET_CURRENT_DASHBOARD(this.dashboard)
-      this.SET_SHOW_SETTINGS_MODAL(true)
+      this.openModal('settingsModal')
     },
     
     onDragStart(event, card) {
       this.draggedCard = card
       this.draggedIndex = this.dashboard.cards.indexOf(card)
-      event.target.classList.add('dragging')
       
-      event.dataTransfer.effectAllowed = 'move'
-      event.dataTransfer.setData('text/plain', card.id)
+      // No need to modify the classList here as it's handled in the DashboardCard component
       
-      try {
-        event.dataTransfer.setDragImage(event.target, 20, 20)
-      } catch (err) {
-        console.warn('Could not set drag image:', err)
-      }
+      // No need to set dataTransfer properties here as they're set in the DashboardCard component
     },
     
     onDragEnd(event) {
@@ -140,7 +149,7 @@ export default {
     
     handleOpenSettings(card) {
       this.SET_CURRENT_DASHBOARD(this.dashboard)
-      this.SET_SHOW_EDIT_CARD_MODAL(true)
+      this.openModal('editCardModal')
       this.currentCard = card
     },
 

@@ -51,10 +51,15 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentDashboard'])
+    ...mapState({
+      currentDashboard: state => state.dashboards.currentDashboard
+    })
   },
   methods: {
-    ...mapActions(['updateDashboard', 'deleteDashboard']),
+    ...mapActions({
+      updateDashboard: 'dashboards/updateDashboard', 
+      deleteDashboard: 'dashboards/deleteDashboard'
+    }),
     async handleSubmit() {
       if (this.formData.name.length > 50 || this.formData.description.length > 200) {
         console.log('Validation failed')

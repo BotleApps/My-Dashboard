@@ -131,10 +131,14 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentDashboard'])
+    ...mapState({
+      currentDashboard: state => state.dashboards.currentDashboard
+    })
   },
   methods: {
-    ...mapActions(['updateCard']),
+    ...mapActions({
+      updateCard: 'cards/updateCard'
+    }),
     updateMetricFields() {
       // Reset value when metric type changes
       this.formData.value = null

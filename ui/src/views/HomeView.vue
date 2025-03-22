@@ -26,7 +26,8 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import DashboardCard from '@/components/DashboardCard.vue'
+import DashboardCard from '@/components/dashboard/DashboardCard.vue'
+import { useModalService } from '@/services/modalService';
 
 export default {
   name: 'HomeView',
@@ -34,10 +35,22 @@ export default {
     DashboardCard
   },
   computed: {
-    ...mapState(['dashboards'])
+    ...mapState({
+      dashboards: state => state.dashboards.dashboards
+    })
+  },
+  setup() {
+    const { openModal, closeModal, isModalOpen } = useModalService();
+    return {
+      openModal,
+      closeModal,
+      isModalOpen
+    };
   },
   methods: {
-    ...mapMutations(['SET_SHOW_CREATE_DASHBOARD_MODAL']),
+    ...mapMutations({
+      SET_SHOW_CREATE_DASHBOARD_MODAL: 'ui/SET_SHOW_CREATE_DASHBOARD_MODAL'
+    }),
     navigateToDashboard(dashboard) {
       this.$router.push({ 
         name: 'Dashboard', 
@@ -53,7 +66,7 @@ export default {
         .replace(/^-+|-+$/g, '')
     },
     openCreateDashboardModal() {
-      this.SET_SHOW_CREATE_DASHBOARD_MODAL(true)
+      this.openModal('createDashboardModal');
     }
   }
 }

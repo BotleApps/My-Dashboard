@@ -2,6 +2,13 @@
   <div 
     :class="['card', cardClasses]" 
     :style="cardStyle"
+    :draggable="isDraggable"
+    @dragstart="handleDragStart"
+    @dragend="handleDragEnd"
+    @dragover.prevent="handleDragOver"
+    @dragenter.prevent="handleDragEnter"
+    @dragleave="handleDragLeave"
+    @drop.prevent="handleDrop"
   >
     <div class="card-header">
       <h3 class="card-title">{{ cardTitle }}</h3>
@@ -162,6 +169,59 @@ export default {
       if (confirm('Are you sure you want to delete this card?')) {
         this.$emit('delete-card', cardId)
       }
+    },
+    handleDragStart(event) {
+      if (!this.isDraggable) return;
+      
+      // Add dragging class for visual feedback
+      event.target.classList.add('dragging');
+      
+      // Set data for the drag operation
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', this.card.id);
+      
+      try {
+        // Try to set a drag image
+        event.dataTransfer.setDragImage(event.target, 20, 20);
+      } catch (err) {
+        console.warn('Could not set drag image:', err);
+      }
+      
+      // Forward the event to parent with card data
+      this.$emit('dragstart', event, this.card);
+    },
+    handleDragEnd(event) {
+      // Remove dragging class
+      event.target.classList.remove('dragging');
+      
+      // Forward the event to parent
+      this.$emit('dragend', event);
+    },
+    handleDragOver(event) {
+      // Necessary to allow dropping
+      event.preventDefault();
+      // Add a visual indicator for drop target
+      event.currentTarget.classList.add('drop-target');
+    },
+    handleDragEnter(event) {
+      // Necessary to allow dropping
+      event.preventDefault();
+      // Add a visual indicator for drop target
+      event.currentTarget.classList.add('drop-target');
+    },
+    handleDragLeave(event) {
+      // Remove visual indicator
+      event.currentTarget.classList.remove('drop-target');
+    },
+    handleDrop(event) {
+      // Necessary to handle drop
+      event.preventDefault();
+      
+      // Remove visual indicator
+      event.currentTarget.classList.remove('drop-target');
+      
+      // Forward the event to parent with this card as the target
+      this.$emit('drop', event, this.card);
     }
   },
   mounted() {
@@ -190,7 +250,7 @@ export default {
 </script>
 
 <style>
-@import '../assets/css/colors.css';
+@import '../../assets/css/colors.css';
 
 /* Theme-based card styles */
 .card {
@@ -356,12 +416,12 @@ export default {
 
 .card .stat {
   background-color: var(--stat-bg);
-  color: var(--stat-text);
+  color: var (--stat-text);
 }
 
 .dashboard-open-btn {
   background-color: var(--btn-secondary-bg);
-  color: var(--btn-secondary-text);
+  color: var (--btn-secondary-text);
 }
 
 .dashboard-open-btn:hover {
@@ -425,5 +485,63 @@ export default {
 }
 .card-settings-button:active {
   background-color: rgba(0, 0, 0, 0.15);
+}
+
+.card-drag-handle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #666;
+  cursor: grab;
+  padding: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  z-index: 10;
+}
+
+.card:hover .card-drag-handle {
+  opacity: 1;
+}
+
+.card-drag-handle:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+}
+
+.card-drag-handle:active {
+  cursor: grabbing;
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.card-drag-handle.hidden-handle {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Add drag-specific styles */
+.card[draggable=true] {
+  cursor: grab;
+}
+
+.card.dragging {
+  opacity: 0.6;
+  cursor: grabbing;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transform: scale(1.02);
+  z-index: 100;
+}
+
+/* Add drop target indicator styles */
+.card.drop-target {
+  box-shadow: 0 0 0 2px var(--primary-color);
+  transform: translateY(-2px);
 }
 </style>
