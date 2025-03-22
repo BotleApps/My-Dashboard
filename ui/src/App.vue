@@ -26,6 +26,7 @@
     <CreateDashboardModal v-if="showCreateDashboardModal" @close="closeCreateDashboardModal" />
     <AddCardModal v-if="showAddCardModal" @close="closeAddCardModal" />
     <DashboardSettingsModal v-if="showSettingsModal" @close="closeSettingsModal" />
+    <!-- Edit card modal is now managed in DashboardView.vue -->
   </div>
 </template>
 
@@ -43,14 +44,19 @@ export default {
     DashboardSettingsModal
   },
   computed: {
-    ...mapState(['dashboards', 'showCreateDashboardModal', 'showAddCardModal', 'showSettingsModal']),
+    ...mapState(['dashboards', 'showCreateDashboardModal', 'showAddCardModal', 'showSettingsModal', 'showEditCardModal', 'currentDashboard']),
     selectedDashboard() {
       return this.$route.params.dashboardSlug || ''
     }
   },
+  data() {
+    return {
+      currentCard: null
+    }
+  },
   methods: {
     ...mapActions(['loadDashboards']),
-    ...mapMutations(['SET_SHOW_CREATE_DASHBOARD_MODAL', 'SET_SHOW_ADD_CARD_MODAL', 'SET_SHOW_SETTINGS_MODAL']),
+    ...mapMutations(['SET_SHOW_CREATE_DASHBOARD_MODAL', 'SET_SHOW_ADD_CARD_MODAL', 'SET_SHOW_SETTINGS_MODAL', 'SET_SHOW_EDIT_CARD_MODAL']),
     
     onDashboardChange(event) {
       const slug = event.target.value
@@ -83,6 +89,10 @@ export default {
 
     closeSettingsModal() {
       this.SET_SHOW_SETTINGS_MODAL(false)
+    },
+
+    closeEditCardModal() {
+      this.SET_SHOW_EDIT_CARD_MODAL(false)
     }
   },
   created() {

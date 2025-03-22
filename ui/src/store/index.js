@@ -57,6 +57,21 @@ export default createStore({
       if (state.currentDashboard && state.dashboards[dashboardIndex].id === state.currentDashboard.id) {
         state.currentDashboard.cards = cards
       }
+    },
+    UPDATE_CARD(state, { cardId, cardData }) {
+      if (state.currentDashboard && state.currentDashboard.cards) {
+        const cardIndex = state.currentDashboard.cards.findIndex(c => c.id === cardId);
+        if (cardIndex !== -1) {
+          // Update the card in the current dashboard
+          state.currentDashboard.cards[cardIndex] = { ...state.currentDashboard.cards[cardIndex], ...cardData };
+          
+          // Also update the card in the dashboards array
+          const dashboardIndex = state.dashboards.findIndex(d => d.id === state.currentDashboard.id);
+          if (dashboardIndex !== -1) {
+            state.dashboards[dashboardIndex] = { ...state.currentDashboard };
+          }
+        }
+      }
     }
   },
   actions: {
@@ -130,6 +145,10 @@ export default createStore({
           dispatch('saveDashboards')
         }
       }
+    },
+    updateCard({ commit, dispatch, state }, { cardId, cardData }) {
+      commit('UPDATE_CARD', { cardId, cardData });
+      dispatch('saveDashboards');
     }
   }
 })

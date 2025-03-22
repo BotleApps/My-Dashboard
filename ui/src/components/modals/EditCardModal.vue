@@ -108,9 +108,25 @@ export default {
     }
   },
   data() {
+    // Create default empty card if not provided
+    const defaultFormData = {
+      title: '',
+      description: '',
+      metricType: '',
+      value: null,
+      width: 3,
+      height: 1,
+      theme: '1'
+    };
+    
+    // Only spread the card properties if the card exists
+    const formData = this.card ? { ...defaultFormData, ...this.card } : defaultFormData;
+    
     return {
-      formData: { ...this.card },
-      wordListInput: this.card.metricType === 'word-list' ? this.card.value.join(', ') : '',
+      formData,
+      wordListInput: this.card && this.card.metricType === 'word-list' && Array.isArray(this.card.value) 
+        ? this.card.value.join(', ') 
+        : '',
       themes
     }
   },

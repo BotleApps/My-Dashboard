@@ -39,7 +39,7 @@
   </div>
 
   <EditCardModal 
-    v-if="showEditCardModal" 
+    v-if="$store.state.showEditCardModal" 
     :card="currentCard" 
     @close="SET_SHOW_EDIT_CARD_MODAL(false)" 
   />
@@ -66,12 +66,11 @@ export default {
     return {
       draggedCard: null,
       draggedIndex: null,
-      currentCard: null,
-      showEditCardModal: false
+      currentCard: null
     }
   },
   computed: {
-    ...mapState(['dashboards', 'currentDashboard']),
+    ...mapState(['dashboards', 'currentDashboard', 'showEditCardModal']),
     ...mapGetters(['getDashboardBySlug']),
     dashboard() {
       return this.getDashboardBySlug(this.dashboardSlug)
