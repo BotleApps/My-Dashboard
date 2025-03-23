@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" :data-theme="currentTheme">
     <header>
       <div class="logo">
         <i class="fas fa-chart-line"></i>
@@ -19,6 +19,9 @@
         </button>
         <button @click="openCreateDashboardModal" class="btn primary">
           <i class="fas fa-plus"></i> New Dashboard
+        </button>
+        <button @click="handleThemeToggle" class="btn theme-toggle" :title="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+          <i :class="['fas', isDarkMode ? 'fa-sun' : 'fa-moon']"></i>
         </button>
       </div>
     </header>
@@ -55,10 +58,14 @@ export default {
   computed: {
     ...mapState({
       dashboards: state => state.dashboards.dashboards,
-      currentDashboard: state => state.dashboards.currentDashboard
+      currentDashboard: state => state.dashboards.currentDashboard,
+      isDarkMode: state => state.ui.isDarkMode
     }),
     selectedDashboard() {
       return this.$route.params.dashboardSlug || ''
+    },
+    currentTheme() {
+      return this.isDarkMode ? 'dark' : 'light'
     }
   },
   data() {
@@ -76,7 +83,9 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadDashboards: 'dashboards/loadDashboards'
+      loadDashboards: 'dashboards/loadDashboards',
+      toggleTheme: 'ui/toggleTheme',
+      initializeTheme: 'ui/initializeTheme'
     }),
     
     onDashboardChange(event) {
@@ -94,10 +103,15 @@ export default {
     
     openImportModal() {
       this.openModal('importDashboardModal')
+    },
+    
+    handleThemeToggle() {
+      this.toggleTheme()
     }
   },
   created() {
     this.loadDashboards()
+    this.initializeTheme()
   }
 }
 </script>
@@ -116,6 +130,29 @@ export default {
   opacity: 0.8;
 }
 
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--border-color);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  background-color: var(--border-color);
+  transform: scale(1.1);
+}
+
+.theme-toggle i {
+  font-size: 1.2rem;
+}
+
 .dashboard-controls {
   display: flex;
   align-items: center;
@@ -126,8 +163,10 @@ export default {
   min-width: 200px;
   padding: 0.5rem;
   border-radius: 4px;
-  border: 1px solid #ddd;
-  background-color: white;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-background);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .btn {
@@ -143,13 +182,13 @@ export default {
 }
 
 .btn.primary {
-  background-color: var(--theme-1-btn-primary-bg);
-  color: var(--theme-1-btn-primary-text);
+  background-color: var(--primary-color);
+  color: white;
 }
 
 .btn.secondary {
-  background-color: var(--theme-1-btn-secondary-bg);
-  color: var(--theme-1-btn-secondary-text);
+  background-color: var(--border-color);
+  color: var(--text-color);
 }
 
 .btn:hover {
@@ -162,8 +201,10 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-color: white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: var(--card-background);
+  box-shadow: var(--shadow);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .logo {
@@ -171,9 +212,16 @@ header {
   align-items: center;
   gap: 0.5rem;
   font-size: 1.5rem;
+  color: var(--primary-color);
 }
 
 .logo i {
   color: var(--theme-1-highlight);
+}
+
+.app-container {
+  transition: background-color 0.3s ease, color 0.3s ease;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 </style>

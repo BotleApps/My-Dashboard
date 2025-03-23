@@ -1,12 +1,16 @@
 const uiModule = {
-  state: {
+  namespaced: true,
+  state: () => ({
     showCreateDashboardModal: false,
     showAddCardModal: false,
     showSettingsModal: false,
-    showEditCardModal: false
-  },
+    showEditCardModal: false,
+    isDarkMode: false
+  }),
   
-  getters: {},
+  getters: {
+    currentTheme: state => state.isDarkMode ? 'dark' : 'light'
+  },
   
   mutations: {
     SET_SHOW_CREATE_DASHBOARD_MODAL(state, value) {
@@ -23,10 +27,27 @@ const uiModule = {
     
     SET_SHOW_EDIT_CARD_MODAL(state, value) {
       state.showEditCardModal = value
+    },
+    
+    SET_DARK_MODE(state, value) {
+      state.isDarkMode = value
+      document.documentElement.setAttribute('data-theme', value ? 'dark' : 'light')
+      localStorage.setItem('darkMode', value)
     }
   },
   
-  actions: {}
-};
+  actions: {
+    initializeTheme({ commit }) {
+      const savedTheme = localStorage.getItem('darkMode')
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      const isDarkMode = savedTheme !== null ? savedTheme === 'true' : prefersDark
+      commit('SET_DARK_MODE', isDarkMode)
+    },
+    
+    toggleTheme({ commit, state }) {
+      commit('SET_DARK_MODE', !state.isDarkMode)
+    }
+  }
+}
 
-export default uiModule;
+export default uiModule
