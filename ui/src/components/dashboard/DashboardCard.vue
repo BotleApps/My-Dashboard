@@ -2,6 +2,10 @@
   <div 
     :class="['card', cardClasses]" 
     :style="cardStyle"
+    :draggable="isDraggable"
+    :data-card-id="card && card.id"
+    @dragstart="handleDragStart"
+    @dragend="handleDragEnd"
   >
     <div class="card-header">
       <h3 class="card-title">{{ cardTitle }}</h3>
@@ -162,6 +166,38 @@ export default {
       if (confirm('Are you sure you want to delete this card?')) {
         this.$emit('delete-card', cardId)
       }
+    },
+    handleDragStart(event) {
+      if (!this.isDraggable) return;
+      
+      // Add dragging class for visual feedback
+      event.target.classList.add('dragging');
+      
+      // Set data for the drag operation
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', this.card.id);
+      
+      try {
+        // Calculate where the mouse is within the card
+        const rect = event.target.getBoundingClientRect();
+        const offsetX = event.clientX - rect.left;
+        const offsetY = event.clientY - rect.top;
+        
+        // Set the drag image with the correct offset
+        event.dataTransfer.setDragImage(event.target, offsetX, offsetY);
+      } catch (err) {
+        console.warn('Could not set drag image:', err);
+      }
+      
+      // Pass the card directly to the parent as a second parameter
+      this.$emit('dragstart', event, this.card);
+    },
+    handleDragEnd(event) {
+      // Remove dragging class
+      event.target.classList.remove('dragging');
+      
+      // Forward the event to parent
+      this.$emit('dragend', event);
     }
   },
   mounted() {
@@ -190,7 +226,7 @@ export default {
 </script>
 
 <style>
-@import '../assets/css/colors.css';
+@import '../../assets/css/colors.css';
 
 /* Theme-based card styles */
 .card {
@@ -248,7 +284,7 @@ export default {
   --card-text: var(--theme-4-text);
   --btn-primary-bg: var(--theme-4-btn-primary-bg);
   --btn-primary-text: var(--theme-4-btn-primary-text);
-  --btn-secondary-bg: var (--theme-4-btn-secondary-bg);
+  --btn-secondary-bg: var(--theme-4-btn-secondary-bg);
   --btn-secondary-text: var(--theme-4-btn-secondary-text);
   --stat-bg: var(--theme-4-stat-bg);
   --stat-text: var(--theme-4-stat-text);
@@ -309,7 +345,7 @@ export default {
   --btn-primary-bg: var(--theme-9-btn-primary-bg);
   --btn-primary-text: var(--theme-9-btn-primary-text);
   --btn-secondary-bg: var(--theme-9-btn-secondary-bg);
-  --btn-secondary-text: var (--theme-9-btn-secondary-text);;
+  --btn-secondary-text: var(--theme-9-btn-secondary-text);
   --stat-bg: var(--theme-9-stat-bg);
   --stat-text: var(--theme-9-stat-text);
 }
@@ -425,5 +461,63 @@ export default {
 }
 .card-settings-button:active {
   background-color: rgba(0, 0, 0, 0.15);
+}
+
+.card-drag-handle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #666;
+  cursor: grab;
+  padding: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  z-index: 10;
+}
+
+.card:hover .card-drag-handle {
+  opacity: 1;
+}
+
+.card-drag-handle:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+}
+
+.card-drag-handle:active {
+  cursor: grabbing;
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.card-drag-handle.hidden-handle {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Add drag-specific styles */
+.card[draggable=true] {
+  cursor: grab;
+}
+
+.card.dragging {
+  opacity: 0.6;
+  cursor: grabbing;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transform: scale(1.02);
+  z-index: 100;
+}
+
+/* Add drop target indicator styles */
+.card.drop-target {
+  box-shadow: 0 0 0 2px var(--primary-color);
+  transform: translateY(-2px);
 }
 </style>

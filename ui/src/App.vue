@@ -22,19 +22,20 @@
       <router-view />
     </main>
 
-    <!-- Modals are registered here but managed by Vuex state -->
-    <CreateDashboardModal v-if="showCreateDashboardModal" @close="closeCreateDashboardModal" />
-    <AddCardModal v-if="showAddCardModal" @close="closeAddCardModal" />
-    <DashboardSettingsModal v-if="showSettingsModal" @close="closeSettingsModal" />
+    <!-- Modals are registered here but managed by modalService -->
+    <CreateDashboardModal v-if="isModalOpen('createDashboardModal')" @close="closeModal('createDashboardModal')" />
+    <AddCardModal v-if="isModalOpen('addCardModal')" @close="closeModal('addCardModal')" />
+    <DashboardSettingsModal v-if="isModalOpen('settingsModal')" @close="closeModal('settingsModal')" />
     <!-- Edit card modal is now managed in DashboardView.vue -->
   </div>
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import CreateDashboardModal from './components/modals/CreateDashboardModal.vue'
 import AddCardModal from './components/modals/AddCardModal.vue'
 import DashboardSettingsModal from './components/modals/DashboardSettingsModal.vue'
+import { useModalService } from '@/services/modalService';
 
 export default {
   name: 'App',
@@ -44,7 +45,10 @@ export default {
     DashboardSettingsModal
   },
   computed: {
-    ...mapState(['dashboards', 'showCreateDashboardModal', 'showAddCardModal', 'showSettingsModal', 'showEditCardModal', 'currentDashboard']),
+    ...mapState({
+      dashboards: state => state.dashboards.dashboards,
+      currentDashboard: state => state.dashboards.currentDashboard
+    }),
     selectedDashboard() {
       return this.$route.params.dashboardSlug || ''
     }
@@ -54,9 +58,18 @@ export default {
       currentCard: null
     }
   },
+  setup() {
+    const { openModal, closeModal, isModalOpen } = useModalService();
+    return {
+      openModal,
+      closeModal,
+      isModalOpen
+    };
+  },
   methods: {
-    ...mapActions(['loadDashboards']),
-    ...mapMutations(['SET_SHOW_CREATE_DASHBOARD_MODAL', 'SET_SHOW_ADD_CARD_MODAL', 'SET_SHOW_SETTINGS_MODAL', 'SET_SHOW_EDIT_CARD_MODAL']),
+    ...mapActions({
+      loadDashboards: 'dashboards/loadDashboards'
+    }),
     
     onDashboardChange(event) {
       const slug = event.target.value
@@ -68,31 +81,7 @@ export default {
     },
     
     openCreateDashboardModal() {
-      this.SET_SHOW_CREATE_DASHBOARD_MODAL(true)
-    },
-    
-    closeCreateDashboardModal() {
-      this.SET_SHOW_CREATE_DASHBOARD_MODAL(false)
-    },
-    
-    openAddCardModal() {
-      this.SET_SHOW_ADD_CARD_MODAL(true)
-    },
-    
-    closeAddCardModal() {
-      this.SET_SHOW_ADD_CARD_MODAL(false)
-    },
-
-    openSettingsModal() {
-      this.SET_SHOW_SETTINGS_MODAL(true)
-    },
-
-    closeSettingsModal() {
-      this.SET_SHOW_SETTINGS_MODAL(false)
-    },
-
-    closeEditCardModal() {
-      this.SET_SHOW_EDIT_CARD_MODAL(false)
+      this.openModal('createDashboardModal')
     }
   },
   created() {

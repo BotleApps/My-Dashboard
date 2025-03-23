@@ -106,6 +106,8 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import { themes } from '@/constants/themes'
+import Card from '@/models/card';
+import { generateUniqueId } from '@/utils/idGenerator';
 
 export default {
   name: 'AddCardModal',
@@ -126,10 +128,14 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentDashboard'])
+    ...mapState({
+      currentDashboard: state => state.dashboards.currentDashboard
+    })
   },
   methods: {
-    ...mapActions(['addCard']),
+    ...mapActions({
+      addCard: 'cards/addCard'
+    }),
     updateMetricFields() {
       // Reset value when metric type changes
       this.cardData.value = null
@@ -187,12 +193,24 @@ export default {
           }
         }
         
-        // Add the card
-        this.addCard(this.cardData)
+        // Create new card instance
+        const newCard = new Card(
+          generateUniqueId(),
+          this.cardData.title,
+          this.cardData.description,
+          this.cardData.metricType,
+          this.cardData.value,
+          this.cardData.width,
+          this.cardData.height,
+          this.cardData.theme
+        );
+        
+        // Add the card without using Promise chaining
+        this.addCard(newCard);
         
         // Reset form and close modal
-        this.resetForm()
-        this.$emit('close')
+        this.resetForm();
+        this.$emit('close');
         
       } catch (error) {
         alert(error.message)

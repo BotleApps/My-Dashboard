@@ -36,6 +36,8 @@
 <script>
 import { mapActions } from 'vuex'
 import { themes } from '@/constants/themes'
+import Dashboard from '@/models/dashboard'
+import { generateSlug } from '@/utils/slugify';
 
 export default {
   name: 'CreateDashboardModal',
@@ -44,31 +46,32 @@ export default {
       name: '',
       description: '',
       selectedTheme: '1',
+      formErrors: {
+        name: '',
+        description: '',
+        slug: ''
+      },
       themes
     }
   },
   methods: {
-    ...mapActions(['createDashboard']),
-    generateSlug(text) {
-      return text
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/[\s_-]+/g, '-')
-        .replace(/^-+|-+$/g, '')
-    },
+    ...mapActions({
+      createDashboard: 'dashboards/createDashboard'
+    }),
     async handleSubmit() {
       if (this.name.length > 50 || this.description.length > 200) {
         return
       }
       try {
-        const slug = this.generateSlug(this.name)
-        await this.createDashboard({
-          name: this.name,
-          description: this.description,
+        const slug = generateSlug(this.name)
+        const newDashboard = new Dashboard(
+          Date.now().toString(),
+          this.name,
+          this.description,
           slug,
-          theme: this.selectedTheme
-        })
+          this.selectedTheme
+        )
+        await this.createDashboard(newDashboard)
         this.name = ''
         this.description = ''
         this.selectedTheme = '1'
@@ -84,9 +87,6 @@ export default {
     selectTheme(theme) {
       this.selectedTheme = theme
     }
-  },
-  mounted() {
-    console.log('CreateDashboardModal mounted')
   }
 }
 </script>
