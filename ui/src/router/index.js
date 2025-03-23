@@ -4,7 +4,7 @@ import DashboardView from '../views/DashboardView.vue'
 
 const routes = [
   {
-    path: '/dashboard',
+    path: '/',
     name: 'Home',
     component: HomeView
   },
