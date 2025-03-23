@@ -12,4 +12,7 @@ const app = createApp(App)
 app.use(store)
 app.use(router)
 
+// Initialize theme before mounting
+store.dispatch('ui/initializeTheme')
+
 app.mount('#app')

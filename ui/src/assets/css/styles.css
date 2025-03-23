@@ -1,5 +1,6 @@
 /* Global Styles */
 :root {
+    /* Light Theme Colors */
     --primary-color: #4a6cf7;
     --accent-color: #ff6b6b;
     --success-color: #00b894;
@@ -12,12 +13,32 @@
     --transition: all 0.3s ease;
     --border-radius: 8px;
     
-    /* Card Colors */
+    /* Card Colors - Light */
     --card-blue: #deebff;
     --card-green: #e3fcef;
     --card-red: #ffebe6;
     --card-orange: #fff4e5;
     --card-purple: #f3e8fd;
+}
+
+/* Dark Theme Colors */
+[data-theme="dark"] {
+    --primary-color: #5d7eff;
+    --accent-color: #ff7b7b;
+    --success-color: #00d1a7;
+    --background-color: #1a1a1a;
+    --card-background: #2d2d2d;
+    --text-color: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --border-color: #404040;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    
+    /* Card Colors - Dark */
+    --card-blue: #1a2942;
+    --card-green: #1a3830;
+    --card-red: #421a1a;
+    --card-orange: #422a1a;
+    --card-purple: #2a1a42;
 }
 
 * {
@@ -31,6 +52,7 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .app-container {
@@ -286,6 +308,11 @@ main {
     background-color: var(--card-background);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
+    color: var(--text-color);
+}
+
+.empty-state p {
+    color: var(--text-secondary);
 }
 
 /* Button Styles */
@@ -343,6 +370,8 @@ select, input, textarea {
     border-radius: var(--border-radius);
     font-family: inherit;
     font-size: 0.875rem;
+    background-color: var(--card-background);
+    color: var(--text-color);
 }
 
 select:focus, input:focus, textarea:focus {
@@ -383,6 +412,7 @@ select:focus, input:focus, textarea:focus {
     overflow-y: auto;
     transform: translateY(-20px);
     transition: var(--transition);
+    color: var(--text-color);
 }
 
 .modal.show .modal-content {
@@ -731,4 +761,38 @@ select:focus, input:focus, textarea:focus {
 .route-enter-from,
 .route-leave-to {
     opacity: 0;
+}
+
+/* Add dark mode specific overrides */
+[data-theme="dark"] .app-container {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] header {
+    background-color: var(--card-background);
+    border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .dashboard-controls select {
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .modal-content {
+    background-color: var(--card-background);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .card {
+    background-color: var(--card-background);
 }

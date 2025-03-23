@@ -3,10 +3,21 @@ import dashboardsModule from './modules/dashboards'
 import cardsModule from './modules/cards'
 import uiModule from './modules/ui'
 
-export default createStore({
+const store = createStore({
   modules: {
-    dashboards: dashboardsModule,
-    cards: cardsModule,
-    ui: uiModule
+    dashboards: {
+      ...dashboardsModule,
+      namespaced: true
+    },
+    cards: {
+      ...cardsModule,
+      namespaced: true
+    },
+    ui: {
+      ...uiModule,
+      namespaced: true
+    }
   }
 })
+
+export default store
