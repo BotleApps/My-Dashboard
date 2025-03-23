@@ -33,12 +33,12 @@
     --border-color: #404040;
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     
-    /* Card Colors - Dark */
-    --card-blue: #1a2942;
-    --card-green: #1a3830;
-    --card-red: #421a1a;
-    --card-orange: #422a1a;
-    --card-purple: #2a1a42;
+    /* Card Colors - Dark - Improved visibility */
+    --card-blue: #1e3356;     /* Slightly lighter and more saturated */
+    --card-green: #1e4237;    /* More saturated green */
+    --card-red: #4d2222;      /* Slightly lighter red */
+    --card-orange: #4d3122;   /* Warmer and lighter orange */
+    --card-purple: #372952;   /* Significantly lighter and more vibrant purple */
 }
 
 * {
