@@ -25,16 +25,14 @@
     
     <!-- For dashboard cards (dashboard selector) -->
     <div v-if="isDashboardCard" class="card-content dashboard-card-content">
-      <div class="dashboard-stats">
-        <div class="stat">
-          <i class="fas fa-chart-line"></i>
-          <span>{{ cardCount }} cards</span>
+      <div class="dashboard-bottom-row">
+        <div class="dashboard-stats">
+          <div class="stat">
+            <i class="fas fa-chart-line"></i>
+            <span>{{ cardCount }} metrics</span>
+          </div>
         </div>
-      </div>
-      <div class="dashboard-card-action">
-        <span class="dashboard-open-btn">
-          <i class="fas fa-arrow-right"></i> Open Dashboard
-        </span>
+      
       </div>
     </div>
     
@@ -405,24 +403,37 @@ export default {
   color: var(--btn-primary-text);
 }
 
-.card-delete-button {
+.card-drag-handle,
+.card-delete-button,
+.card-settings-button {
   position: absolute;
-  top: 10px;
-  right: 50px;
-  color: #666;
-  cursor: pointer;
-  padding: 8px;
-  opacity: 0;
-  transition: opacity 0.2s ease, background-color 0.2s ease;
-  width: 30px;
-  height: 30px;
+  top: 8px;  /* Reduced from 10px */
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.03);
   border: 1px solid rgba(0, 0, 0, 0.08);
+  width: 28px;  /* Reduced from 30px */
+  height: 28px;  /* Reduced from 30px */
+  opacity: 0;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+  z-index: 10;
 }
+
+.card-drag-handle {
+  right: 8px;  /* Reduced from 10px */
+  cursor: grab;
+}
+
+.card-delete-button {
+  right: 44px;  /* Adjusted spacing */
+}
+
+.card-settings-button {
+  right: 80px;  /* Adjusted spacing */
+}
+
 .card:hover .card-delete-button {
   opacity: 1;
 }
@@ -434,24 +445,6 @@ export default {
   background-color: rgba(0, 0, 0, 0.15);
 }
 
-.card-settings-button {
-  position: absolute;
-  top: 10px;
-  right: 90px;
-  color: #666;
-  cursor: pointer;
-  padding: 8px;
-  opacity: 0;
-  transition: opacity 0.2s ease, background-color 0.2s ease;
-  width: 30px;
-  height: 30px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-}
 .card:hover .card-settings-button {
   opacity: 1;
 }
@@ -461,26 +454,6 @@ export default {
 }
 .card-settings-button:active {
   background-color: rgba(0, 0, 0, 0.15);
-}
-
-.card-drag-handle {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  color: #666;
-  cursor: grab;
-  padding: 8px;
-  opacity: 0;
-  transition: opacity 0.2s ease, background-color 0.2s ease;
-  width: 30px;
-  height: 30px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  z-index: 10;
 }
 
 .card:hover .card-drag-handle {
@@ -519,5 +492,32 @@ export default {
 .card.drop-target {
   box-shadow: 0 0 0 2px var(--primary-color);
   transform: translateY(-2px);
+}
+
+.percentage-value,
+.number-value {
+  font-size: 2.25rem;  /* Reduced from 2.5rem */
+}
+
+.star-rating {
+  font-size: 1.25rem;  /* Reduced from 1.5rem */
+}
+
+.word-list span {
+  padding: 0.2rem 0.6rem;  /* Reduced from 0.25rem 0.75rem */
+  margin: 0.2rem;  /* Reduced from 0.25rem */
+}
+
+.dashboard-card .card-title {
+  -webkit-line-clamp: 2;
+  line-height: 1.3;
+  max-height: 2.6em;
+}
+
+.dashboard-card .card-description {
+  -webkit-line-clamp: 3;
+  line-height: 1.4;
+  max-height: 4.2em;
+  margin-bottom: 0.5rem;
 }
 </style>

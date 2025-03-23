@@ -4,17 +4,17 @@
       <h2 class="text" >{{ dashboard ? dashboard.name : 'Loading...' }}</h2>
       <p class="text">{{ dashboard ? dashboard.description : '' }}</p>
     </div>
-    <div class="dashboard-settings">
-      <button @click="openSettingsModal" class="btn icon">
+    <div class="dashboard-controls">
+      <button @click="openSettingsModal" class="btn icon" title="Settings">
         <i class="fas fa-cog"></i>
       </button>
+      <button @click="openAddCardModal" class="btn icon" title="Add Metric">
+        <i class="fas fa-plus"></i>
+      </button>
+      <button @click="exportDashboard" class="btn icon" title="Export Dashboard">
+        <i class="fas fa-file-export"></i>
+      </button>
     </div>
-  </div>
-
-  <div class="dashboard-actions">
-    <button @click="openAddCardModal" class="btn primary">
-      <i class="fas fa-plus"></i> Add Card
-    </button>
   </div>
 
   <div 
@@ -45,19 +45,26 @@
     :card="currentCard" 
     @close="closeModal('editCardModal')" 
   />
+
+  <ImportDashboardModal 
+    v-if="isModalOpen('importDashboardModal')" 
+    @close="closeModal('importDashboardModal')" 
+  />
 </template>
 
 <script>
 import { mapState, mapActions, mapMutations } from 'vuex'
 import DashboardCard from '@/components/dashboard/DashboardCard.vue'
 import EditCardModal from '@/components/modals/EditCardModal.vue'
+import ImportDashboardModal from '@/components/modals/ImportDashboardModal.vue'
 import { useModalService } from '@/services/modalService'; // Fix the import path
 
 export default {
   name: 'DashboardView',
   components: {
     DashboardCard,
-    EditCardModal
+    EditCardModal,
+    ImportDashboardModal
   },
   props: {
     dashboardSlug: {
@@ -310,6 +317,36 @@ export default {
 
     handleDeleteCard(cardId) {
       this.deleteCard(cardId)
+    },
+    
+    exportDashboard() {
+      if (!this.dashboard) return;
+      
+      // Prepare the JSON data
+      const dashboardData = JSON.stringify(this.dashboard, null, 2);
+      
+      // Create a blob with the data
+      const blob = new Blob([dashboardData], { type: 'application/json' });
+      
+      // Create a temporary URL to the blob
+      const url = URL.createObjectURL(blob);
+      
+      // Create a link element
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `dashboard-${this.dashboard.slug}-${new Date().toISOString().slice(0, 10)}.json`;
+      
+      // Append to the body, click, and remove
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Release the blob URL
+      URL.revokeObjectURL(url);
+    },
+    
+    openImportModal() {
+      this.openModal('importDashboardModal');
     }
   },
   created() {
@@ -322,7 +359,8 @@ export default {
   watch: {
     dashboardSlug(newSlug) {
       this.loadDashboard(newSlug)
-      const dashboard = this.getDashboardBySlug(newSlug)
+      // Use the getter from the store instead of trying to call it as a local method
+      const dashboard = this.$store.getters['dashboards/getDashboardBySlug'](newSlug)
       if (dashboard) {
         this.SET_CURRENT_DASHBOARD(dashboard)
       }
@@ -358,12 +396,36 @@ export default {
   color : inherit;
 }
 
+.dashboard-controls {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
 .btn.icon {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: inherit;
+  padding: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  opacity: 0.4;
+}
+
+.btn.icon:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+  opacity: 1;
 }
 
 .theme-1 { background-color: var(--theme-1-bg); color: var(--theme-1-text); }

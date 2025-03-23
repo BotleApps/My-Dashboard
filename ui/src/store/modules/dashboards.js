@@ -16,22 +16,38 @@ const dashboardsModule = {
   
   mutations: {
     SET_DASHBOARDS(state, dashboards) {
-      state.dashboards = dashboards
+      state.dashboards = dashboards.map(dashboard => ({
+        ...dashboard,
+        cards: Array.isArray(dashboard.cards) ? dashboard.cards : []
+      }))
     },
     
     SET_CURRENT_DASHBOARD(state, dashboard) {
-      state.currentDashboard = dashboard
+      if (dashboard) {
+        state.currentDashboard = {
+          ...dashboard,
+          cards: Array.isArray(dashboard.cards) ? dashboard.cards : []
+        }
+      } else {
+        state.currentDashboard = null
+      }
     },
     
     ADD_DASHBOARD(state, dashboard) {
-      state.dashboards.push(dashboard)
+      state.dashboards.push({
+        ...dashboard,
+        cards: Array.isArray(dashboard.cards) ? dashboard.cards : []
+      })
       state.currentDashboard = dashboard
     },
     
     UPDATE_DASHBOARD(state, dashboard) {
       const dashboardIndex = state.dashboards.findIndex(d => d.id === dashboard.id)
       if (dashboardIndex !== -1) {
-        state.dashboards[dashboardIndex] = { ...dashboard }
+        state.dashboards[dashboardIndex] = {
+          ...dashboard,
+          cards: Array.isArray(dashboard.cards) ? dashboard.cards : []
+        }
       }
     }
   },
@@ -53,26 +69,49 @@ const dashboardsModule = {
     
     createDashboard({ commit, dispatch }, dashboardData) {
       return new Promise((resolve) => {
+        // Ensure we have a proper cards array
+        const cards = Array.isArray(dashboardData.cards) ? dashboardData.cards : []
+        
+        // If dashboardData already has all required properties, create a new object with guaranteed cards array
+        if (dashboardData.id && dashboardData.name && dashboardData.description && dashboardData.slug) {
+          const dashboard = {
+            ...dashboardData,
+            cards: cards
+          }
+          commit('ADD_DASHBOARD', dashboard)
+          dispatch('saveDashboards')
+          resolve(dashboard)
+          return
+        }
+        
+        // Otherwise create a new Dashboard with provided data
         const newDashboard = new Dashboard(
-          Date.now().toString(),
+          dashboardData.id || Date.now().toString(),
           dashboardData.name,
           dashboardData.description,
           dashboardData.slug,
-          dashboardData.theme
-        );
+          dashboardData.theme,
+          cards
+        )
         
-        commit('ADD_DASHBOARD', newDashboard);
-        dispatch('saveDashboards');
-        resolve(newDashboard);
-      });
+        commit('ADD_DASHBOARD', newDashboard)
+        dispatch('saveDashboards')
+        resolve(newDashboard)
+      })
     },
     
     updateDashboard({ commit, dispatch }, dashboard) {
       return new Promise((resolve) => {
-        commit('SET_CURRENT_DASHBOARD', dashboard)
-        commit('UPDATE_DASHBOARD', dashboard)
+        // Ensure cards array exists
+        const updatedDashboard = {
+          ...dashboard,
+          cards: Array.isArray(dashboard.cards) ? dashboard.cards : []
+        }
+        
+        commit('SET_CURRENT_DASHBOARD', updatedDashboard)
+        commit('UPDATE_DASHBOARD', updatedDashboard)
         dispatch('saveDashboards')
-        resolve(dashboard)
+        resolve(updatedDashboard)
       })
     },
     

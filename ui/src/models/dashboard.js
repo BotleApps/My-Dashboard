@@ -5,6 +5,7 @@ export default class Dashboard {
     this.description = description;
     this.slug = slug;
     this.theme = theme;
-    this.cards = cards;
+    // Ensure cards is always an array
+    this.cards = Array.isArray(cards) ? cards : [];
   }
 }

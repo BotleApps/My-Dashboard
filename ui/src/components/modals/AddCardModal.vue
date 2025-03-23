@@ -2,7 +2,7 @@
   <div class="modal show">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Add New Card</h3>
+        <h3>Add New Metric</h3>
         <span class="close-modal" @click="$emit('close')">&times;</span>
       </div>
       <div class="modal-body">
@@ -10,10 +10,12 @@
           <div class="form-group">
             <label for="card-title">Title</label>
             <input type="text" id="card-title" v-model="cardData.title" required>
+            <small>Title will be wrapped after 2 lines</small>
           </div>
           <div class="form-group">
             <label for="card-description">Description</label>
             <textarea id="card-description" v-model="cardData.description" required></textarea>
+            <small>Description will be wrapped after 3 lines</small>
           </div>
           <div class="form-group">
             <label for="metric-type">Metric Type</label>
@@ -94,7 +96,7 @@
           </div>
           
           <div class="form-actions">
-            <button type="submit" class="btn primary">Add Card</button>
+            <button type="submit" class="btn primary">Add Metric</button>
             <button type="button" class="btn secondary" @click="$emit('close')">Cancel</button>
           </div>
         </form>
@@ -258,5 +260,32 @@ export default {
 
 .color-box.selected {
   border-color: #000;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group small {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+/* Add after the title input */
+#card-title + small {
+    content: "Title will be wrapped after 2 lines";
+}
+
+/* Add after the description textarea */
+#card-description + small {
+    content: "Description will be wrapped after 3 lines";
 }
 </style>
