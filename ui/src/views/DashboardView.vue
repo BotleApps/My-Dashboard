@@ -4,23 +4,20 @@
       <h2 class="text" >{{ dashboard ? dashboard.name : 'Loading...' }}</h2>
       <p class="text">{{ dashboard ? dashboard.description : '' }}</p>
     </div>
-    <div class="dashboard-settings">
-      <button @click="openSettingsModal" class="btn icon">
+    <div class="dashboard-controls">
+      <button @click="openSettingsModal" class="btn icon" title="Settings">
         <i class="fas fa-cog"></i>
       </button>
+      <button @click="openAddCardModal" class="btn icon" title="Add Metric">
+        <i class="fas fa-plus"></i>
+      </button>
+      <button @click="exportDashboard" class="btn icon" title="Export Dashboard">
+        <i class="fas fa-file-export"></i>
+      </button>
+      <button @click="openImportModal" class="btn icon" title="Import Dashboard">
+        <i class="fas fa-file-import"></i>
+      </button>
     </div>
-  </div>
-
-  <div class="dashboard-actions">
-    <button @click="openAddCardModal" class="btn primary">
-      <i class="fas fa-plus"></i> Add Metric
-    </button>
-    <button @click="exportDashboard" class="btn secondary export-btn">
-      <i class="fas fa-file-export"></i> Export
-    </button>
-    <button @click="openImportModal" class="btn secondary import-btn">
-      <i class="fas fa-file-import"></i> Import
-    </button>
   </div>
 
   <div 
@@ -402,12 +399,36 @@ export default {
   color : inherit;
 }
 
+.dashboard-controls {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
 .btn.icon {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: inherit;
+  padding: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  opacity: 0.4;
+}
+
+.btn.icon:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+  opacity: 1;
 }
 
 .theme-1 { background-color: var(--theme-1-bg); color: var(--theme-1-text); }
