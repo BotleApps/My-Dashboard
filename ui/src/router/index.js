@@ -17,6 +17,7 @@ const routes = [
 ]
 
 const router = createRouter({
+  // Using hash mode for GitHub Pages compatibility
   history: createWebHashHistory(),
   routes
 })
