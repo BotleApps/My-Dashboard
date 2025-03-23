@@ -2,7 +2,7 @@
   <div class="modal show">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Edit Card</h3>
+        <h3>Edit Metric</h3>
         <span class="close-modal" @click="$emit('close')">&times;</span>
       </div>
       <div class="modal-body">
@@ -10,10 +10,12 @@
           <div class="form-group">
             <label for="card-title">Title</label>
             <input type="text" id="card-title" v-model="formData.title" required>
+            <small>Title will be wrapped after 2 lines</small>
           </div>
           <div class="form-group">
             <label for="card-description">Description</label>
             <textarea id="card-description" v-model="formData.description" required></textarea>
+            <small>Description will be wrapped after 3 lines</small>
           </div>
           <div class="form-group">
             <label for="metric-type">Metric Type</label>
