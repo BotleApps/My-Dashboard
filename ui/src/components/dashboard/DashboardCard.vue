@@ -3,12 +3,9 @@
     :class="['card', cardClasses]" 
     :style="cardStyle"
     :draggable="isDraggable"
+    :data-card-id="card && card.id"
     @dragstart="handleDragStart"
     @dragend="handleDragEnd"
-    @dragover.prevent="handleDragOver"
-    @dragenter.prevent="handleDragEnter"
-    @dragleave="handleDragLeave"
-    @drop.prevent="handleDrop"
   >
     <div class="card-header">
       <h3 class="card-title">{{ cardTitle }}</h3>
@@ -181,13 +178,18 @@ export default {
       event.dataTransfer.setData('text/plain', this.card.id);
       
       try {
-        // Try to set a drag image
-        event.dataTransfer.setDragImage(event.target, 20, 20);
+        // Calculate where the mouse is within the card
+        const rect = event.target.getBoundingClientRect();
+        const offsetX = event.clientX - rect.left;
+        const offsetY = event.clientY - rect.top;
+        
+        // Set the drag image with the correct offset
+        event.dataTransfer.setDragImage(event.target, offsetX, offsetY);
       } catch (err) {
         console.warn('Could not set drag image:', err);
       }
       
-      // Forward the event to parent with card data
+      // Pass the card directly to the parent as a second parameter
       this.$emit('dragstart', event, this.card);
     },
     handleDragEnd(event) {
@@ -196,32 +198,6 @@ export default {
       
       // Forward the event to parent
       this.$emit('dragend', event);
-    },
-    handleDragOver(event) {
-      // Necessary to allow dropping
-      event.preventDefault();
-      // Add a visual indicator for drop target
-      event.currentTarget.classList.add('drop-target');
-    },
-    handleDragEnter(event) {
-      // Necessary to allow dropping
-      event.preventDefault();
-      // Add a visual indicator for drop target
-      event.currentTarget.classList.add('drop-target');
-    },
-    handleDragLeave(event) {
-      // Remove visual indicator
-      event.currentTarget.classList.remove('drop-target');
-    },
-    handleDrop(event) {
-      // Necessary to handle drop
-      event.preventDefault();
-      
-      // Remove visual indicator
-      event.currentTarget.classList.remove('drop-target');
-      
-      // Forward the event to parent with this card as the target
-      this.$emit('drop', event, this.card);
     }
   },
   mounted() {
@@ -308,7 +284,7 @@ export default {
   --card-text: var(--theme-4-text);
   --btn-primary-bg: var(--theme-4-btn-primary-bg);
   --btn-primary-text: var(--theme-4-btn-primary-text);
-  --btn-secondary-bg: var (--theme-4-btn-secondary-bg);
+  --btn-secondary-bg: var(--theme-4-btn-secondary-bg);
   --btn-secondary-text: var(--theme-4-btn-secondary-text);
   --stat-bg: var(--theme-4-stat-bg);
   --stat-text: var(--theme-4-stat-text);
@@ -369,7 +345,7 @@ export default {
   --btn-primary-bg: var(--theme-9-btn-primary-bg);
   --btn-primary-text: var(--theme-9-btn-primary-text);
   --btn-secondary-bg: var(--theme-9-btn-secondary-bg);
-  --btn-secondary-text: var (--theme-9-btn-secondary-text);;
+  --btn-secondary-text: var(--theme-9-btn-secondary-text);
   --stat-bg: var(--theme-9-stat-bg);
   --stat-text: var(--theme-9-stat-text);
 }
@@ -416,12 +392,12 @@ export default {
 
 .card .stat {
   background-color: var(--stat-bg);
-  color: var (--stat-text);
+  color: var(--stat-text);
 }
 
 .dashboard-open-btn {
   background-color: var(--btn-secondary-bg);
-  color: var (--btn-secondary-text);
+  color: var(--btn-secondary-text);
 }
 
 .dashboard-open-btn:hover {

@@ -17,7 +17,12 @@
     </button>
   </div>
 
-  <div class="cards-container" ref="cardsContainer" @dragover.prevent>
+  <div 
+    class="cards-container" 
+    ref="cardsContainer"
+    @dragover="onContainerDragOver"
+    @drop="onContainerDrop"
+  >
     <div v-if="!dashboard || !dashboard.cards || !dashboard.cards.length" class="empty-state">
       <i class="fas fa-chart-bar"></i>
       <p>No cards yet. Add a card to get started!</p>
@@ -30,7 +35,6 @@
       :card="card"
       @dragstart="onDragStart"
       @dragend="onDragEnd"
-      @drop="onDrop"
       @delete-card="handleDeleteCard"
       @open-settings="handleOpenSettings"
     />
@@ -73,7 +77,8 @@ export default {
     return {
       draggedCard: null,
       draggedIndex: null,
-      currentCard: null
+      currentCard: null,
+      draggedCardId: null
     }
   },
   computed: {
@@ -115,42 +120,192 @@ export default {
     },
     
     onDragStart(event, card) {
-      this.draggedCard = card
-      this.draggedIndex = this.dashboard.cards.indexOf(card)
+      console.log('Drag start with card:', card ? card.id : 'undefined', card);
+      this.draggedCard = card;
+      this.draggedIndex = this.dashboard.cards.indexOf(card);
       
-      // No need to modify the classList here as it's handled in the DashboardCard component
+      // Use event to add visual feedback
+      event.target.classList.add('dragging');
       
-      // No need to set dataTransfer properties here as they're set in the DashboardCard component
+      // Store card ID as fallback mechanism
+      if (card && card.id) {
+        this.draggedCardId = card.id;
+      }
     },
     
     onDragEnd(event) {
-      event.target.classList.remove('dragging')
-      this.draggedCard = null
-      this.draggedIndex = null
+      console.log('Drag ended');
+      // Use event to remove visual feedback
+      event.target.classList.remove('dragging');
+      
+      // Reset drag state
+      this.draggedCard = null;
+      this.draggedIndex = -1;
+      this.draggedCardId = null;
     },
     
-    onDrop(event, targetCard) {
-      if (!this.draggedCard) return
-
-      const cards = [...this.dashboard.cards]
-      const currentIndex = this.draggedIndex
-      const targetIndex = cards.indexOf(targetCard)
+    onDrop(targetCard) {
+      if (!this.draggedCard) return;
       
-      if (currentIndex !== targetIndex) {
-        cards.splice(currentIndex, 1)
-        cards.splice(targetIndex, 0, this.draggedCard)
+      const cards = [...this.dashboard.cards];
+      const currentIndex = this.draggedIndex;
+      const targetIndex = cards.indexOf(targetCard);
+      
+      if (currentIndex !== targetIndex && currentIndex !== -1 && targetIndex !== -1) {
+        // Remove the card from the current position
+        cards.splice(currentIndex, 1);
+        // Add it at the new position
+        cards.splice(targetIndex, 0, this.draggedCard);
         
+        // Update the store
         this.updateCardsOrder({
           dashboardIndex: this.dashboardIndex,
-          cards
-        })
+          cards: cards
+        });
+      }
+    },
+    
+    onContainerDragOver(event) {
+      // Necessary to allow dropping
+      event.preventDefault();
+      
+      // Add a visual indicator for the container as a drop target
+      event.currentTarget.classList.add('drag-over');
+      
+      // Remove any individual card drop-target classes to avoid confusion
+      document.querySelectorAll('.card.drop-target').forEach(el => {
+        el.classList.remove('drop-target');
+      });
+    },
+
+    onContainerDrop(event) {
+      // Prevent default browser behavior
+      event.preventDefault();
+      
+      // Remove the drag-over class
+      event.currentTarget.classList.remove('drag-over');
+      
+      console.log('Container drop detected', this.draggedCard ? this.draggedCard.id : 'none');
+      
+      // Get card ID from dataTransfer if available
+      const cardId = event.dataTransfer.getData('text/plain');
+      console.log('Card ID from dataTransfer:', cardId);
+      
+      // If draggedCard is not set but we have a card ID from dataTransfer, try to recover
+      if (!this.draggedCard && cardId && this.dashboard && this.dashboard.cards) {
+        this.draggedCard = this.dashboard.cards.find(c => c.id === cardId);
+        if (this.draggedCard) {
+          this.draggedIndex = this.dashboard.cards.indexOf(this.draggedCard);
+          console.log('Recovered dragged card from ID:', this.draggedCard.id);
+        }
+      }
+      
+      // Final check if we have the required data
+      if (!this.draggedCard || !this.dashboard || !this.dashboard.cards) {
+        console.log('Missing required data for drop, even after recovery attempt');
+        return;
+      }
+      
+      // Get the mouse position relative to the container
+      const containerRect = this.$refs.cardsContainer.getBoundingClientRect();
+      const mouseX = event.clientX - containerRect.left;
+      const mouseY = event.clientY - containerRect.top;
+      
+      // Find the closest card to the drop position
+      let closestCard = null;
+      let minDistance = Infinity;
+      
+      // Get all card elements
+      const cardElements = Array.from(this.$refs.cardsContainer.querySelectorAll('.card'));
+      console.log('Found', cardElements.length, 'card elements');
+      
+      // Find the closest card to the drop position
+      cardElements.forEach(cardEl => {
+        const rect = cardEl.getBoundingClientRect();
+        const cardX = rect.left + rect.width / 2 - containerRect.left;
+        const cardY = rect.top + rect.height / 2 - containerRect.top;
+        
+        // Calculate distance to card center
+        const distance = Math.sqrt(
+          Math.pow(mouseX - cardX, 2) + 
+          Math.pow(mouseY - cardY, 2)
+        );
+        
+        // Skip the dragged card itself
+        const elCardId = cardEl.dataset.cardId;
+        if (elCardId === this.draggedCard.id) return;
+        
+        // Update closest card if this one is closer
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestCard = cardEl;
+        }
+      });
+      
+      // If no card was found, append to the end
+      if (!closestCard) {
+        console.log('No closest card found, moving to end');
+        // Move card to the end
+        const cards = [...this.dashboard.cards];
+        const currentIndex = this.draggedIndex;
+        
+        // Only proceed if we have a valid index
+        if (currentIndex !== -1) {
+          // Remove the card from its current position
+          cards.splice(currentIndex, 1);
+          // Add it to the end
+          cards.push(this.draggedCard);
+          
+          console.log('Updating card order - moving to end');
+          // Update the store
+          this.updateCardsOrder({
+            dashboardIndex: this.dashboardIndex,
+            cards: cards
+          });
+        }
+        return;
+      }
+      
+      // Identify the target card from the element
+      const targetCardId = closestCard.dataset.cardId;
+      console.log('Target card ID:', targetCardId);
+      const targetCard = this.dashboard.cards.find(c => c.id === targetCardId);
+      
+      if (!targetCard) {
+        console.log('Target card not found in dashboard');
+        return;
+      }
+      
+      // Calculate target position
+      const targetIndex = this.dashboard.cards.indexOf(targetCard);
+      const cards = [...this.dashboard.cards];
+      const currentIndex = this.draggedIndex;
+      
+      console.log('Current index:', currentIndex, 'Target index:', targetIndex);
+      
+      // Only proceed if we have valid indices and they're different
+      if (currentIndex !== targetIndex && currentIndex !== -1 && targetIndex !== -1) {
+        // Remove card from current position
+        cards.splice(currentIndex, 1);
+        
+        // Insert at new position
+        cards.splice(targetIndex, 0, this.draggedCard);
+        
+        console.log('Updating card order - repositioning');
+        // Update the store
+        this.updateCardsOrder({
+          dashboardIndex: this.dashboardIndex,
+          cards: cards
+        });
+      } else {
+        console.log('No need to reorder, positions are the same or invalid');
       }
     },
     
     handleOpenSettings(card) {
-      this.SET_CURRENT_DASHBOARD(this.dashboard)
-      this.openModal('editCardModal')
-      this.currentCard = card
+      this.SET_CURRENT_DASHBOARD(this.dashboard);
+      this.currentCard = card;
+      this.openModal('editCardModal');
     },
 
     handleDeleteCard(cardId) {
@@ -221,4 +376,9 @@ export default {
 .theme-8 { background-color: var(--theme-8-bg); color: var(--theme-8-text); }
 .theme-9 { background-color: var(--theme-9-bg); color: var(--theme-9-text); }
 .theme-10 { background-color: var(--theme-10-bg); color: var(--theme-10-text); }
+
+.cards-container.drag-over {
+  background-color: rgba(0, 0, 0, 0.05);
+  outline: 2px dashed var(--primary-color);
+}
 </style>
