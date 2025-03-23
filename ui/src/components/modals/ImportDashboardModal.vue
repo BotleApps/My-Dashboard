@@ -17,7 +17,7 @@
               required
             >
             <p class="import-hint">
-              Select a previously exported dashboard JSON file to import.
+              Select a previously exported dashboard JSON file to import. This will create a new dashboard.
             </p>
           </div>
           
@@ -27,13 +27,6 @@
               <p><strong>Name:</strong> {{ parsedData.name }}</p>
               <p><strong>Description:</strong> {{ parsedData.description }}</p>
               <p><strong>Cards:</strong> {{ parsedData.cards ? parsedData.cards.length : 0 }} items</p>
-            </div>
-            
-            <div class="form-group">
-              <label>
-                <input type="checkbox" v-model="createNew">
-                Import as a new dashboard (will create a copy)
-              </label>
             </div>
           </div>
           
@@ -69,14 +62,12 @@ export default {
       fileContent: null,
       parsedData: {},
       error: null,
-      loading: false,
-      createNew: true
+      loading: false
     };
   },
   methods: {
     ...mapActions({
-      createDashboard: 'dashboards/createDashboard',
-      updateDashboard: 'dashboards/updateDashboard'
+      createDashboard: 'dashboards/createDashboard'
     }),
     
     handleFileChange(event) {
@@ -123,41 +114,27 @@ export default {
       this.error = null;
       
       try {
-        if (this.createNew) {
-          // Create a new dashboard with the imported data
-          const newDashboard = { 
-            ...this.parsedData,
-            // Ensure we preserve the cards array
-            cards: Array.isArray(this.parsedData.cards) ? [...this.parsedData.cards] : []
-          };
-          
-          // Generate a new ID and slug
-          newDashboard.id = Date.now().toString();
-          
-          // Append "copy" to the name and regenerate the slug
-          newDashboard.name = `${newDashboard.name} (Copy)`;
-          newDashboard.slug = generateSlug(newDashboard.name);
-          
-          await this.createDashboard(newDashboard);
-          
-          // Navigate to the new dashboard
-          this.$router.push({ 
-            name: 'Dashboard', 
-            params: { dashboardSlug: newDashboard.slug }
-          });
-        } else {
-          // Update existing dashboard
-          const updatedDashboard = {
-            ...this.parsedData,
-            // Ensure we preserve the cards array
-            cards: Array.isArray(this.parsedData.cards) ? [...this.parsedData.cards] : []
-          };
-          
-          await this.updateDashboard(updatedDashboard);
-          
-          // Refresh the current view
-          window.location.reload();
-        }
+        // Create a new dashboard with the imported data
+        const newDashboard = { 
+          ...this.parsedData,
+          // Ensure we preserve the cards array
+          cards: Array.isArray(this.parsedData.cards) ? [...this.parsedData.cards] : []
+        };
+        
+        // Generate a new ID and slug
+        newDashboard.id = Date.now().toString();
+        
+        // Append "copy" to the name and regenerate the slug
+        newDashboard.name = `${newDashboard.name} (Copy)`;
+        newDashboard.slug = generateSlug(newDashboard.name);
+        
+        await this.createDashboard(newDashboard);
+        
+        // Navigate to the new dashboard
+        this.$router.push({ 
+          name: 'Dashboard', 
+          params: { dashboardSlug: newDashboard.slug }
+        });
         
         this.$emit('close');
       } catch (err) {

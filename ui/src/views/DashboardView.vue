@@ -14,9 +14,6 @@
       <button @click="exportDashboard" class="btn icon" title="Export Dashboard">
         <i class="fas fa-file-export"></i>
       </button>
-      <button @click="openImportModal" class="btn icon" title="Import Dashboard">
-        <i class="fas fa-file-import"></i>
-      </button>
     </div>
   </div>
 
