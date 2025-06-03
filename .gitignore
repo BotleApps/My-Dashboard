@@ -6,3 +6,4 @@ approuter/package-lock.json
 /ui/node_modules
 ui/package-lock.json
 /ui/dist
+.DS_Store
