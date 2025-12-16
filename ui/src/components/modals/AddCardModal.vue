@@ -33,12 +33,14 @@
           <!-- Dynamic fields based on metric type -->
           <div v-if="cardData.metricType === 'percentage'" class="form-group">
             <label for="percentage-value">Percentage Value</label>
-            <input type="number" id="percentage-value" v-model.number="cardData.value" min="0" max="100" required>
+            <input type="number" id="percentage-value" v-model.number="cardData.value" step="0.01" required>
+            <small>You can enter any number with up to two decimal places (e.g., -25.50, 150.75)</small>
           </div>
           
           <div v-else-if="cardData.metricType === 'number'" class="form-group">
             <label for="number-value">Number Value</label>
-            <input type="number" id="number-value" v-model.number="cardData.value" required>
+            <input type="number" id="number-value" v-model.number="cardData.value" step="0.01" required>
+            <small>You can enter any number with up to two decimal places (e.g., -100.50, 999.99)</small>
           </div>
           
           <div v-else-if="cardData.metricType === 'star-rating'" class="form-group">
@@ -156,13 +158,17 @@ export default {
         // Process value based on metric type
         if (this.cardData.metricType === 'percentage') {
           const value = this.cardData.value
-          if (isNaN(value) || value < 0 || value > 100) {
-            throw new Error('Percentage must be a number between 0 and 100')
+          if (isNaN(value)) {
+            throw new Error('Please enter a valid number')
           }
+          // Restrict to two decimal places
+          this.cardData.value = Math.round(value * 100) / 100
         } else if (this.cardData.metricType === 'number') {
           if (isNaN(this.cardData.value)) {
             throw new Error('Please enter a valid number')
           }
+          // Restrict to two decimal places
+          this.cardData.value = Math.round(this.cardData.value * 100) / 100
         } else if (this.cardData.metricType === 'star-rating') {
           const value = this.cardData.value
           if (isNaN(value) || value < 0 || value > 5) {

@@ -6,7 +6,7 @@ modules:
 # ======================= UI Module =======================
   - name: my-dashboard-app
     type: com.sap.html5.application-content
-    path: ui
+    path: ui/dist
     parameters:
       disk-quota: 256M
       memory: 256M          
@@ -16,14 +16,7 @@ modules:
           content-target: true
       - name: my-dashboard-uaa
     build-parameters:
-      builder: custom
-      commands:
-        - npm install
-        - npm run build
-        - echo '{"sap.app":{"id":"my.dashboard.app","type":"application","applicationVersion":{"version":"0.0.1"}},"sap.ui":{"technology":"UI5","icons":{"icon":"","favIcon":"","phone":"","phone@2":"","tablet":"","tablet@2":""},"deviceTypes":{"desktop":true,"tablet":true,"phone":true}},"sap.ui5":{"dependencies":{"minUI5Version":"1.60.0"}},"sap.cloud":{"public":true,"service":"my-dashboard"}}' > dist/manifest.json
-        - cd dist && zip -r dist.zip . -x "*.DS_Store" "*.zip"
-      supported-platforms: []
-      build-result: dist
+      no-source: true
 
 # ======================= Approuter =======================
   - name: my-dashboard-approuter
@@ -66,10 +59,9 @@ modules:
       commands: []
       requires:
         - name: my-dashboard-app
+          target-path: resources/
           artifacts:
             - dist.zip
-          target-path: resources/
-
 resources:
   - name: my-dashboard-destination
     type: org.cloudfoundry.managed-service

@@ -1,12 +1,11 @@
 {
-	"name": "my-dashboard-approuter",
-	"version": "1.0.0",
-	"description": "Approuter for Dashboard",
-	"dependencies": {
-		"@sap/approuter": "^17.1.0"
-	},
-	"scripts": {
-		"start": "node node_modules/@sap/approuter/approuter.js",
-		"dev": "node node_modules/@sap/approuter/approuter.js -w local"
-	}
+    "name": "my-dashboard-approuter",
+    "version": "0.0.1",
+    "description": "Node.js based application router service",
+    "dependencies": {
+        "@sap/approuter": "^20.3.1"
+    },
+    "scripts": {
+        "start": "node node_modules/@sap/approuter/approuter.js"
+    }
 }

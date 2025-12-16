@@ -1,0 +1,23 @@
+{
+  "name": "my-dashboard",
+  "version": "1.0.0", 
+  "description": "Personal dashboard application with SAP Approuter",
+  "scripts": {
+    "dev": "./run-local.sh start",
+    "start": "./run-local.sh start", 
+    "install-deps": "./run-local.sh install",
+    "build": "./run-local.sh build",
+    "ui": "cd ui && npm run serve",
+    "approuter": "cd approuter && npm run local-auth",
+    "test": "cd ui && npm test",
+    "clean": "rm -rf ui/node_modules approuter/node_modules ui/package-lock.json approuter/package-lock.json",
+    "stop": "./run-local.sh stop"
+  },
+  "keywords": ["dashboard", "vue", "sap", "approuter", "xsuaa"],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}
